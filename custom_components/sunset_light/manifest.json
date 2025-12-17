@@ -1,0 +1,9 @@
+{
+  "domain": "sunset_light",
+  "name": "Sunset Light",
+  "documentation": "https://github.com/your_username/ha-sunset-light-hack",
+  "dependencies": [],
+  "codeowners": ["@your_username"],
+  "requirements": ["bleak"],
+  "version": "0.1.0"
+}
