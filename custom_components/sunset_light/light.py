@@ -15,20 +15,18 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_MAC
 from homeassistant.core import HomeAssistant, State
 from homeassistant.helpers import service
+import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 
 from .const import DOMAIN
 from . import control
 
 # Service schemas
-SERVICE_SET_SCENE_SCHEMA = service.PLATFORM_SCHEMA.extend({
-    vol.Required("entity_id"): service.ENTITY_ID_FORMAT,
-    vol.Required("scene_name"): str,
+SERVICE_SET_SCENE_SCHEMA = vol.Schema({
+    vol.Required("scene_name"): cv.string,
 })
 
-SERVICE_SET_WHITE_SCHEMA = service.PLATFORM_SCHEMA.extend({
-    vol.Required("entity_id"): service.ENTITY_ID_FORMAT,
-})
+SERVICE_SET_WHITE_SCHEMA = vol.Schema({})
 
 _LOGGER = logging.getLogger(__name__)
 
