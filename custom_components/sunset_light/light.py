@@ -5,9 +5,10 @@ import asyncio
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_RGB_COLOR,
+    ATTR_EFFECT,
     LightEntity,
-    SUPPORT_BRIGHTNESS,
-    SUPPORT_COLOR,
+    ColorMode,
+    LightEntityFeature,
 )
 from homeassistant.components import bluetooth
 from homeassistant.config_entries import ConfigEntry
@@ -59,6 +60,16 @@ async def async_setup_entry(
 class SunsetLight(LightEntity):
     """Representation of a Sunset Light."""
 
+    _attr_supported_color_modes = {ColorMode.RGB}
+    _attr_color_mode = ColorMode.RGB
+    _attr_supported_features = LightEntityFeature.EFFECT
+    _attr_effect_list = [
+        "Fantasy", "Sunset", "Forest", "Ghost", "Sunrise", 
+        "Midsummer", "Tropicaltwilight", "Green Prairie", "Rubyglow", 
+        "Aurora", "Savanah", "Alarm", "Lake Placid", "Neon", 
+        "Sundowner", "Bluestar", "Redrose", "Rating", "Disco", "Autumn"
+    ]
+
     def __init__(self, mac, name, hass: HomeAssistant):
         """Initialize a Sunset Light."""
         self._mac = mac
@@ -66,6 +77,7 @@ class SunsetLight(LightEntity):
         self._is_on = None
         self._brightness = None
         self._rgb_color = None
+        self._effect = None
         self._hass = hass
 
     @property
@@ -92,11 +104,11 @@ class SunsetLight(LightEntity):
     def rgb_color(self):
         """Return the RGB color value."""
         return self._rgb_color
-
+    
     @property
-    def supported_features(self):
-        """Flag supported features."""
-        return SUPPORT_BRIGHTNESS | SUPPORT_COLOR
+    def effect(self):
+        """Return the current effect."""
+        return self._effect
 
     def _get_device(self):
         """Get the BLEDevice object or fallback to MAC."""
@@ -112,19 +124,22 @@ class SunsetLight(LightEntity):
             r, g, b = kwargs[ATTR_RGB_COLOR]
             await control.set_color(self._get_device(), r, g, b)
             self._rgb_color = (r, g, b)
+            self._effect = None # Clear effect if color set manually
+        elif ATTR_EFFECT in kwargs:
+            effect = kwargs[ATTR_EFFECT]
+            await control.set_scene(self._get_device(), effect)
+            self._effect = effect
         else:
-            # Keep current color or set to a default if not already set
-            if self._rgb_color is None:
-                self._rgb_color = (255, 255, 255) # Default to white if not set
+            # Keep current settings/defaults
+            if self._rgb_color is None and self._effect is None:
+                self._rgb_color = (255, 255, 255)
 
         if ATTR_BRIGHTNESS in kwargs:
             brightness = kwargs[ATTR_BRIGHTNESS]
             await control.set_brightness(self._get_device(), int(brightness / 255 * 100))
             self._brightness = brightness
-        else:
-            # Keep current brightness or set to a default if not already set
-            if self._brightness is None:
-                self._brightness = 255 # Default to full brightness if not set
+        elif self._brightness is None:
+             self._brightness = 255
 
         self.async_write_ha_state()
 
@@ -138,13 +153,15 @@ class SunsetLight(LightEntity):
         """Handle the set_scene service call."""
         _LOGGER.debug("Setting scene %s for %s", scene_name, self._name)
         await control.set_scene(self._get_device(), scene_name)
+        self._effect = scene_name
         self.async_write_ha_state()
 
     async def async_handle_set_white(self):
         """Handle the set_white service call."""
         _LOGGER.debug("Setting %s to white", self._name)
         await control.set_white(self._get_device())
-        self._rgb_color = (255, 255, 255) # Assuming white is full RGB
-        self._brightness = 255 # Assuming white is full brightness
-        self._is_on = True # Turning on if setting white
+        self._rgb_color = (255, 255, 255)
+        self._brightness = 255
+        self._is_on = True
+        self._effect = None
         self.async_write_ha_state()
