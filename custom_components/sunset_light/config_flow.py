@@ -62,7 +62,7 @@ class SunsetLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     user_input[CONF_MAC] = mac
                     return self.async_create_entry(title="Sunset Light", data=user_input)
             else:
-                mac = user_input.get("discovered_device")
+                mac = self._discover_devices().get(source)
                 if not mac:
                     errors["base"] = "no_mac"
                 else:
@@ -92,15 +92,7 @@ class SunsetLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         SelectSelectorConfig(
                             options=device_options,
                             mode=SelectSelectorMode.DROPDOWN,
-                        )
-                    ),
-                    vol.Optional(
-                        "discovered_device",
-                        default=first_addr,
-                    ): SelectSelector(
-                        SelectSelectorConfig(
-                            options=[SelectOptionDict(value=addr, label=label) for label, addr in discovered.items()],
-                            mode=SelectSelectorMode.DROPDOWN,
+                            translation_key="device",
                         )
                     ),
                     vol.Required(
@@ -110,6 +102,7 @@ class SunsetLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         SelectSelectorConfig(
                             options=[SelectOptionDict(value=k, label=v) for k, v in profile_options.items()],
                             mode=SelectSelectorMode.DROPDOWN,
+                            translation_key="profile",
                         )
                     ),
                     vol.Optional(CONF_MAC): TextSelector(),
@@ -122,11 +115,12 @@ class SunsetLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         "device_source",
                         default="manual",
                     ): SelectSelector(
-                        SelectSelectorConfig(
-                            options=[SelectOptionDict(value="manual", label="Manual entry")],
-                            mode=SelectSelectorMode.DROPDOWN,
-                        )
-                    ),
+                            SelectSelectorConfig(
+                                options=[SelectOptionDict(value="manual", label="Manual entry")],
+                                mode=SelectSelectorMode.DROPDOWN,
+                                translation_key="device",
+                            )
+                        ),
                     vol.Required(CONF_MAC): TextSelector(),
                     vol.Required(
                         CONF_PROFILE,
@@ -135,8 +129,16 @@ class SunsetLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         SelectSelectorConfig(
                             options=[SelectOptionDict(value=k, label=v) for k, v in profile_options.items()],
                             mode=SelectSelectorMode.DROPDOWN,
+                            translation_key="profile",
                         )
                     ),
                 }
             )
-        return self.async_show_form(step_id="user", data_schema=data_schema, errors=errors)
+        return self.async_show_form(
+            step_id="user",
+            data_schema=data_schema,
+            errors=errors,
+            description_placeholders={
+                "helper": "Choose a discovered device or select 'Manual entry' and fill Bluetooth MAC + type.",
+            },
+        )
