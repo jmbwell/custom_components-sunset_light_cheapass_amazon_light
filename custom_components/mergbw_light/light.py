@@ -51,7 +51,7 @@ async def async_setup_entry(
     _LOGGER.info("async_setup_entry data=%s", config_entry.data)
     mac_address = config_entry.data[CONF_MAC]
     profile_key = config_entry.data.get(CONF_PROFILE, DEFAULT_PROFILE)
-    light = SunsetLight(mac_address, "MeRGBW Light", hass, profile_key)
+    light = MeRGBWLight(mac_address, "MeRGBW Light", hass, profile_key)
     async_add_entities([light])
 
     platform = entity_platform.async_get_current_platform()
