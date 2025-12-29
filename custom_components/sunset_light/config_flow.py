@@ -6,6 +6,13 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.components import bluetooth
 from homeassistant.const import CONF_MAC
+from homeassistant.helpers.selector import (
+    SelectOptionDict,
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
+    TextSelector,
+)
 
 from .const import CONF_PROFILE, DEFAULT_PROFILE, DOMAIN
 from .protocol import list_profiles, PROFILE_HEXAGON
@@ -74,22 +81,62 @@ class SunsetLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             # Preselect first device and its guessed profile.
             first_label, first_addr = next(iter(discovered.items()))
             guessed_profile = self._guess_profile(first_label)
-            device_choices = {label: label for label in discovered.keys()}
-            device_choices["Manual entry"] = "manual"
-            data_schema = {
-                vol.Required("device_source", default=first_label): vol.In(device_choices),
-                vol.Optional("discovered_device", default=first_addr): vol.In(discovered),
-                vol.Required(CONF_PROFILE, default=guessed_profile): vol.In(profile_options),
-                vol.Optional(CONF_MAC): str,
-            }
+            device_options = [SelectOptionDict(value=label, label=label) for label in discovered.keys()]
+            device_options.append(SelectOptionDict(value="manual", label="Manual entry"))
+            data_schema = vol.Schema(
+                {
+                    vol.Required(
+                        "device_source",
+                        default=first_label,
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=device_options,
+                            mode=SelectSelectorMode.DROPDOWN,
+                        )
+                    ),
+                    vol.Optional(
+                        "discovered_device",
+                        default=first_addr,
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[SelectOptionDict(value=addr, label=label) for label, addr in discovered.items()],
+                            mode=SelectSelectorMode.DROPDOWN,
+                        )
+                    ),
+                    vol.Required(
+                        CONF_PROFILE,
+                        default=guessed_profile,
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[SelectOptionDict(value=k, label=v) for k, v in profile_options.items()],
+                            mode=SelectSelectorMode.DROPDOWN,
+                        )
+                    ),
+                    vol.Optional(CONF_MAC): TextSelector(),
+                }
+            )
         else:
-            data_schema = {
-                vol.Required("device_source", default="manual"): vol.In({"Manual entry": "manual"}),
-                vol.Required(CONF_MAC): str,
-                vol.Required(CONF_PROFILE, default=DEFAULT_PROFILE): vol.In(profile_options),
-            }
-        return self.async_show_form(
-            step_id="user",
-            data_schema=vol.Schema(data_schema),
-            errors=errors,
-        )
+            data_schema = vol.Schema(
+                {
+                    vol.Required(
+                        "device_source",
+                        default="manual",
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[SelectOptionDict(value="manual", label="Manual entry")],
+                            mode=SelectSelectorMode.DROPDOWN,
+                        )
+                    ),
+                    vol.Required(CONF_MAC): TextSelector(),
+                    vol.Required(
+                        CONF_PROFILE,
+                        default=DEFAULT_PROFILE,
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[SelectOptionDict(value=k, label=v) for k, v in profile_options.items()],
+                            mode=SelectSelectorMode.DROPDOWN,
+                        )
+                    ),
+                }
+            )
+        return self.async_show_form(step_id="user", data_schema=data_schema, errors=errors)
