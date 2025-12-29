@@ -135,7 +135,7 @@ class MeRGBWLight(LightEntity):
         self._profile = get_profile(profile_key)
         self._attr_effect_list = self._profile.effect_list
         self._weekday_index = {day: idx for idx, day in enumerate(WEEKDAYS)}
-        self._attr_available = False
+        self._attr_available = True
 
     @property
     def unique_id(self):
@@ -194,15 +194,12 @@ class MeRGBWLight(LightEntity):
             self._mac,
             disconnected_callback=self._on_disconnected,
         )
-        self._attr_available = True
-        self.async_write_ha_state()
         return self._client
 
     def _on_disconnected(self, client):
         """Handle disconnection."""
         _LOGGER.info("Disconnected from %s", self._mac)
         self._client = None
-        self._attr_available = False
         if self._disconnect_timer:
             self._disconnect_timer()
             self._disconnect_timer = None
@@ -232,7 +229,6 @@ class MeRGBWLight(LightEntity):
         if self._client:
             await self._client.disconnect()
             self._client = None
-            self._attr_available = False
             self.async_write_ha_state()
 
     def _schedule_disconnect(self):
@@ -247,7 +243,6 @@ class MeRGBWLight(LightEntity):
         if self._client:
             await self._client.disconnect()
             self._client = None
-            self._attr_available = False
             self.async_write_ha_state()
 
     async def _run_with_client(self, handler):
