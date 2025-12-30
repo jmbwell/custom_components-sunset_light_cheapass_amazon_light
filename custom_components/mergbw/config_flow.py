@@ -160,7 +160,4 @@ class MeRGBWLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=data_schema,
             errors=errors,
-            description_placeholders={
-                "helper": "Choose a discovered device or select 'Manual entry' and fill Bluetooth MAC + type.",
-            },
         )
