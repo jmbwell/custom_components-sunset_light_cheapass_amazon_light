@@ -4,8 +4,6 @@ Home Assistant integration for MeRGBW Bluetooth LE lights (Hexagon Light and Sun
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-blue.svg)](https://hacs.xyz/) [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Bluetooth-lightgrey)](https://www.home-assistant.io/integrations/bluetooth/)
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jmbwell&repository=mergbw&category=integration)
-
 ## Contents
 - [Features](#features)
 - [Supported devices](#supported-devices)
@@ -36,6 +34,8 @@ This integration supports adding more variants. This document includes some note
 - The Bluetooth MAC address of your light (if discovery does not find it).
 
 ## Installation
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jmbwell&repository=mergbw&category=integration)
 
 **HACS (recommended)**
 1. In HACS, open the ⋮ menu → Custom repositories.
