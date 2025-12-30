@@ -1,4 +1,4 @@
-# MeRGBW Light
+# MeRGBW
 
 Home Assistant integration for MeRGBW Bluetooth LE lights (Hexagon Light and Sunset Light).
 
