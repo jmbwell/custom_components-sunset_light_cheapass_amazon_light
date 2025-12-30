@@ -4,18 +4,20 @@ Home Assistant integration for MeRGBW Bluetooth LE lights (Hexagon Light and Sun
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-blue.svg)](https://hacs.xyz/) [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Bluetooth-lightgrey)](https://www.home-assistant.io/integrations/bluetooth/)
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jmbwell&repository=mergbw&category=integration)
+
 ## Contents
-- Features
-- Supported devices
-- Requirements
-- Installation
-- Configuration
-- Usage
-- Services
-- Scenes / effects
-- Troubleshooting
-- Development
-- Protocol notes
+- [Features](#features)
+- [Supported devices](#supported-devices)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Services](#services)
+- [Scenes / effects](#scenes--effects)
+- [Troubleshooting](#troubleshooting)
+- [Development](#development)
+- [Protocol notes](#protocol-notes)
 
 ## Features
 - Discovers nearby MeRGBW lights via Home Assistant Bluetooth and lets you override the guessed profile when needed.
@@ -24,10 +26,10 @@ Home Assistant integration for MeRGBW Bluetooth LE lights (Hexagon Light and Sun
 - Ships helper scripts for packet debugging and scene extraction.
 
 ## Supported devices
-- **Sunset Light** (default profile): 8-bit RGB payloads and simple scenes.
-- **Hexagon Light**: hue/saturation payloads, extended scenes (~100), music modes, schedules.
 
-This started as a **Sunset Light** integration and was extended for my **Hexagon Light**. Other devices that work with the **MeRGBW App** likely also work. These devices seem to be the same reference design on the same chipset with minor firmware/profile tweaks. Plenty of Amazon rebrands are likely similar; some may work by picking a profile, others might have just-different-enough packets to fail.
+There are many devices available that seem to work with an app called **MeRGBW**. This integration first supported one such device called **Sunset Light** available on Amazon. This fork of the project adds support for a device called **Hexagon Light**, also on Amazon. Other devices that work with the **MeRGBW App** might also work. They seem to be the same reference design on the same chipset with minor firmware/profile tweaks. 
+
+This integration supports adding more variants. This document includes some notes for developers to get started.
 
 ## Requirements
 - Home Assistant with Bluetooth enabled and the host in range of the light.
