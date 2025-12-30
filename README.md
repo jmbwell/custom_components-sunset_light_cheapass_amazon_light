@@ -27,7 +27,7 @@ Home Assistant integration for MeRGBW Bluetooth LE lights (Hexagon Light and Sun
 - **Sunset Light** (default profile): 8-bit RGB payloads and simple scenes.
 - **Hexagon Light**: hue/saturation payloads, extended scenes (~100), music modes, schedules.
 
-Choose the profile during setup; the profile drives command builders, effect lists, and available services.
+This started as a **Sunset Light** integration and was extended for my **Hexagon Light**. Other devices that work with the **MeRGBW App** likely also work. These devices seem to be the same reference design on the same chipset with minor firmware/profile tweaks. Plenty of Amazon rebrands are likely similar; some may work by picking a profile, others might have just-different-enough packets to fail.
 
 ## Requirements
 - Home Assistant with Bluetooth enabled and the host in range of the light.
@@ -115,6 +115,15 @@ data:
 - Stay in Bluetooth range and ensure no other host keeps the device connected.
 - If colors look wrong, delete/re-add the integration and choose the other profile.
 - Use `scripts/ble_baseline.py` to scan, connect, and send raw writes (`--profile sunset_light` or `--profile hexagon_light`).
+
+## Sniffing and adding new devices
+1. Install Xcode from the Mac App Store, then download Apple’s “Additional Tools for Xcode” to get **PacketLogger** (inside `Hardware/`).
+2. Install the [Bluetooth logging profile](https://developer.apple.com/bug-reporting/profiles-and-logs/) from Apple’s developer site onto your iOS device.
+2. Connect your iOS device to the Mac via USB cable.
+3. Open PacketLogger and start a new **iOS Trace**.
+4. Open the official app for the light on iOS, interact with every feature (on/off, colors, brightness, effects/scenes, music modes, schedules, etc.) while logging runs.
+5. Stop logging and save the trace. Look for repeated write patterns, command bytes, and payload shapes to infer packet structure (checksum, lengths, ID fields).
+6. Add a new protocol profile in `custom_components/mergbw/protocol.py` that maps the observed commands (on/off, brightness, color payload, effects/scenes, any extras). Register it in `list_profiles`/`get_profile`, update `services.yaml` if new services are needed, and add tests mirroring `tests/test_protocol.py`.
 
 ## Development
 - Packet builder tests live in `tests/test_protocol.py`; run them with `pytest`.
