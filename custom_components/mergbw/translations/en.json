@@ -1,0 +1,21 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    },
+    "error": {
+      "no_mac": "Pick a device or enter a Bluetooth MAC address."
+    },
+    "step": {
+      "user": {
+        "title": "Connect to MeRGBW",
+        "description": "Choose a discovered device or select \"Manual entry\" and enter the Bluetooth MAC address and profile.",
+        "data": {
+          "device": "Device",
+          "mac": "Bluetooth MAC address",
+          "profile": "Profile"
+        }
+      }
+    }
+  }
+}
