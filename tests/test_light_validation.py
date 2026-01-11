@@ -1,5 +1,6 @@
 import sys
 import types
+from datetime import datetime, timezone
 from importlib import util
 from pathlib import Path
 
@@ -33,8 +34,6 @@ event_mod = types.ModuleType("homeassistant.helpers.event")
 exceptions_mod = types.ModuleType("homeassistant.exceptions")
 util_mod = types.ModuleType("homeassistant.util")
 dt_mod = types.ModuleType("homeassistant.util.dt")
-
-from datetime import datetime, timezone
 
 def utcnow():
     return datetime.now(timezone.utc)
